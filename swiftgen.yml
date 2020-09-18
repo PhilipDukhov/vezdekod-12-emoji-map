@@ -1,0 +1,6 @@
+xcassets:
+  inputs:
+    - Map/Supporting files/Assets.xcassets
+  outputs:
+    - templateName: swift4
+      output: Map/Supporting files/Assets.swift
