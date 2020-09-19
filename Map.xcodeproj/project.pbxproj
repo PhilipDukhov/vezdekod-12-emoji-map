@@ -29,6 +29,7 @@
 		D5778ACF2515395C001DDB47 /* UIView+InspectableLayer.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5778ACE2515395C001DDB47 /* UIView+InspectableLayer.swift */; };
 		D5778AD625153D6A001DDB47 /* KeyboardNotifier.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5778AD525153D6A001DDB47 /* KeyboardNotifier.swift */; };
 		D5778AD925153ED8001DDB47 /* TopicCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = D5778AD825153ED7001DDB47 /* TopicCell.swift */; };
+		D583054B2515FD4700E0CE9B /* LastVC.swift in Sources */ = {isa = PBXBuildFile; fileRef = D583054A2515FD4700E0CE9B /* LastVC.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -58,6 +59,7 @@
 		D5778ACE2515395C001DDB47 /* UIView+InspectableLayer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIView+InspectableLayer.swift"; sourceTree = "<group>"; };
 		D5778AD525153D6A001DDB47 /* KeyboardNotifier.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = KeyboardNotifier.swift; sourceTree = "<group>"; };
 		D5778AD825153ED7001DDB47 /* TopicCell.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TopicCell.swift; sourceTree = "<group>"; };
+		D583054A2515FD4700E0CE9B /* LastVC.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LastVC.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -131,6 +133,7 @@
 			isa = PBXGroup;
 			children = (
 				D5778AB325153626001DDB47 /* Main.storyboard */,
+				D583054A2515FD4700E0CE9B /* LastVC.swift */,
 				D54FC1ED251540C900CC1F11 /* Model */,
 				D5778ADB25154016001DDB47 /* Map */,
 				D5778AD125153968001DDB47 /* Helpers */,
@@ -319,6 +322,7 @@
 				D54FC2152515493E00CC1F11 /* Mood.swift in Sources */,
 				D54FC2192515496600CC1F11 /* Post.swift in Sources */,
 				D54FC21F25155EAA00CC1F11 /* MoodView.swift in Sources */,
+				D583054B2515FD4700E0CE9B /* LastVC.swift in Sources */,
 				D54FC23A2515A60100CC1F11 /* PostAnnotationView.swift in Sources */,
 				D54FC2112515491100CC1F11 /* DefaultsKeys.swift in Sources */,
 				D5778AB225153626001DDB47 /* MapViewController.swift in Sources */,

@@ -26,7 +26,13 @@ internal enum Asset {
     internal static let blue = ColorAsset(name: "Colors/blue")
   }
   internal enum Images {
+    internal static let backButton = ImageAsset(name: "Images/backButton")
+    internal static let close = ImageAsset(name: "Images/close")
     internal static let dropdownArrow = ImageAsset(name: "Images/dropdownArrow")
+    internal static let header = ImageAsset(name: "Images/header")
+    internal static let mapButton = ImageAsset(name: "Images/mapButton")
+    internal static let scrollView = ImageAsset(name: "Images/scrollView")
+    internal static let tabbar = ImageAsset(name: "Images/tabbar")
   }
 }
 // swiftlint:enable identifier_name line_length nesting type_body_length type_name

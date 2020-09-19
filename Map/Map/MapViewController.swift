@@ -69,12 +69,17 @@ class MapViewController: UIViewController {
     
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
+        navigationController?.setNavigationBarHidden(true, animated: true)
         mapView.delegate = self
     }
     
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         mapView.delegate = nil
+    }
+    
+    override func prepare(for segue: UIStoryboardSegue, sender: Any?) {
+        segue.destination.title = (sender as! PostAnnotation).post.topic.title
     }
     
     @IBAction private func closeButtonTap() {
@@ -86,13 +91,11 @@ class MapViewController: UIViewController {
     }
     
     private func filterUpdated() {
-        let date = Date()
         var topics = Topic.allCases
         var filteredPosts = posts
         defer {
             self.topics = topics
             self.filteredPosts = filteredPosts
-            print(#function, -date.timeIntervalSinceNow)
         }
         if let selectedMood = moodFilterView.selectedMood {
             topics = topics.filter { $0.mood == selectedMood }
@@ -176,7 +179,8 @@ class MapViewController: UIViewController {
         computingNeeded = false
         computing = true
         let clusterRects = visibleMapRect.clusterRects
-        let overlays = clusterRects
+        let overlays = true ? [] :
+            clusterRects
             .map { rect -> MKMapRect in
                 let inset = min(rect.width / 70, rect.height / 70)
                 return rect.insetBy(dx: inset, dy: inset)
@@ -322,10 +326,15 @@ extension MapViewController: MKMapViewDelegate {
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         guard let annotation = annotation as? PostAnnotation else { return nil }
-        return mapView.dequeueReusableAnnotationView(
+        let view = mapView.dequeueReusableAnnotationView(
             withIdentifier: NSStringFromClass(PostAnnotationView.self),
             for: annotation
-        )
+        ) as! PostAnnotationView
+        view.action = { [weak self] in
+            self?.performSegue(withIdentifier: "show", sender: annotation)
+            self?.navigationController?.setNavigationBarHidden(false, animated: true)
+        }
+        return view
     }
     
     func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {

@@ -11,12 +11,19 @@ import MapKit
 class PostAnnotationView: MKAnnotationView {
     private let moodView = MoodView()
     
+    var action: (() -> Void)?
+    
     override init(annotation: MKAnnotation?, reuseIdentifier: String?) {
         super.init(annotation: annotation, reuseIdentifier: reuseIdentifier)
         addSubview(moodView)
         moodView.setShadow(true)
+        addGestureRecognizer(UITapGestureRecognizer(target: self, action: #selector(tap)))
     }
     
+    @objc func tap() {
+        action?()
+    }
+
     required init?(coder aDecoder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
     }
