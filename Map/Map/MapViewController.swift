@@ -25,7 +25,7 @@ class MapViewController: UIViewController {
     }
     private lazy var filteredPosts = posts {
         didSet {
-            updateMap()
+            setNeedsUpdateMap()
         }
     }
     private var topics: [Topic] = Topic.allCases {
@@ -57,7 +57,7 @@ class MapViewController: UIViewController {
             if clear {
                 posts = []
             } else {
-                updateMap()
+                setNeedsUpdateMap()
             }
         }(false)
         
@@ -80,11 +80,13 @@ class MapViewController: UIViewController {
     }
     
     private func filterUpdated() {
+        let date = Date()
         var topics = Topic.allCases
         var filteredPosts = posts
         defer {
             self.topics = topics
             self.filteredPosts = filteredPosts
+            print(#function, -date.timeIntervalSinceNow)
         }
         if let selectedMood = moodFilterView.selectedMood {
             topics = topics.filter { $0.mood == selectedMood }
@@ -103,6 +105,7 @@ class MapViewController: UIViewController {
     
     private func setupMapView() {
         mapView.register(PostAnnotationView.self, forAnnotationViewWithReuseIdentifier: NSStringFromClass(PostAnnotationView.self))
+        mapView.register(PostAnnotationView.self, forAnnotationViewWithReuseIdentifier: MKMapViewDefaultClusterAnnotationViewReuseIdentifier)
         mapView.userTrackingMode = .follow
         mapView.cameraZoomRange = MKMapView.CameraZoomRange(maxCenterCoordinateDistance: 200000)
     }
@@ -142,11 +145,98 @@ class MapViewController: UIViewController {
         }
     }
     
-    private func updateMap() {
-        annotations = filteredPosts.map(PostAnnotation.init))
-        
-        
-        print(mapView.annotations)
+    private var computingNeeded = false
+    private var computing = false
+    private func setNeedsUpdateMap() {
+        guard !computingNeeded else { return }
+        if computing {
+            computingNeeded = true
+        } else {
+            let visibleMapRect = mapView.visibleMapRect
+            backgroundQueue.async {
+                self.updateMap(visibleMapRect: visibleMapRect)
+            }
+        }
+    }
+    
+    var overlays = [MKPolyline]() {
+        didSet {
+            mapView.removeOverlays(oldValue)
+            mapView.addOverlays(overlays)
+        }
+    }
+    
+    private func updateMap(visibleMapRect: MKMapRect) {
+        computingNeeded = false
+        computing = true
+        let clusterRects = visibleMapRect.clusterRects
+        let overlays = clusterRects
+            .map { rect -> MKMapRect in
+                let inset = min(rect.width / 70, rect.height / 70)
+                return rect.insetBy(dx: inset, dy: inset)
+            }
+            .map { MKPolyline([
+                MKMapPoint(x: $0.minX, y: $0.minY),
+                MKMapPoint(x: $0.maxX, y: $0.minY),
+                MKMapPoint(x: $0.maxX, y: $0.maxY),
+                MKMapPoint(x: $0.minX, y: $0.maxY),
+                MKMapPoint(x: $0.minX, y: $0.minY),
+            ] + $0.threeCirclePoints)
+        }
+        let newAnnotations = filteredPosts
+            .reduce(into: [Int: [Post]]()) { result, post in
+                guard let rectIndex = clusterRects.firstIndex(where: { $0.contains(post.mapPoint) }) else { return }
+                result[rectIndex, default: []].append(post)
+            }.reduce(into: [Post]()) { result, clusterPosts in
+                var rectPoints = clusterRects[clusterPosts.key].threeCirclePoints
+                guard clusterPosts.value.count > 7 else {
+                    result += clusterPosts.value
+                    return
+                }
+                let top = clusterPosts.value.reduce(into: [Topic: [MKMapPoint]]()) { result, post in
+                    result[post.topic, default: []].append(post.mapPoint)
+                }.sorted { $0.value.count > $1.value.count }
+                if top.count == 1 {
+                    result += clusterPosts.value.prefix(7)
+                    return
+                }
+                result += top
+                    .prefix(3)
+                    .map { key, value in
+                    (topic: key,
+                     location: value.reduce(into: MKMapPoint()) {
+                        $0.x += $1.x / Double(value.count)
+                        $0.y += $1.y / Double(value.count)
+                     },
+                     clusterCount: value.count
+                    )
+                }.map { info -> Post in
+                    let index = rectPoints
+                        .enumerated()
+                        .map {
+                            (diff: $0.element.x - info.location.x + $0.element.y - info.location.y,
+                             index: $0.offset)
+                        }.max { $0.diff < $1.diff }!
+                        .index
+                    return Post(
+                        topic: info.topic,
+                        location: rectPoints.remove(at: index).coordinate,
+                        clusterCount: info.clusterCount
+                    )
+                }
+            }
+//            .print { "result \($0.count)" }
+            .map(PostAnnotation.init)
+        computing = false
+        DispatchQueue.main.async {
+            if self.computingNeeded {
+                self.computingNeeded = false
+                self.setNeedsUpdateMap()
+            } else {
+                self.annotations = newAnnotations
+                self.overlays = overlays
+            }
+        }
     }
 }
 
@@ -193,30 +283,50 @@ extension MapViewController: UISearchBarDelegate {
     }
 }
 
+private let backgroundQueue = DispatchQueue(label: "backgroundQueue", qos: .utility)
 extension MapViewController: MKMapViewDelegate {
     func mapView(_ mapView: MKMapView, regionDidChangeAnimated animated: Bool) {
+        defer {
+            setNeedsUpdateMap()
+        }
         let rect = mapView.visibleMapRect
         let rectCount = posts.filter({ rect.contains(.init($0.location)) }).count
-        guard rectCount < 10 else { return }
-        (0..<10 - rectCount).forEach { _ in
-            let location = MKMapPoint(
-                x: rect.minX + rect.width * .random(in: 0...1),
-                y: rect.minY + rect.height * .random(in: 0...1)
-            )
-            posts.append(Post(topic: Topic.allCases.randomElement()!,
-                              location: location.coordinate))
+        let neededCount = Int(rect.width / 1000) - rectCount
+        guard neededCount > 0 else { return }
+        let generator: () -> [Post] = {
+            (0..<neededCount).map { _ in
+                Post(topic: Topic.allCases.randomElement()!,
+                     location: MKMapPoint(
+                        x: rect.minX + rect.width * .random(in: 0...1),
+                        y: rect.minY + rect.height * .random(in: 0...1)
+                     ).coordinate)
+            }
+        }
+        if neededCount > 10 {
+            backgroundQueue.async {
+                let newPosts = generator()
+                DispatchQueue.main.async {
+                    self.posts += newPosts
+                }
+            }
+        } else {
+            posts += generator()
         }
     }
     
     func mapView(_ mapView: MKMapView, viewFor annotation: MKAnnotation) -> MKAnnotationView? {
         guard let annotation = annotation as? PostAnnotation else { return nil }
-        let view = mapView.dequeueReusableAnnotationView(
+        return mapView.dequeueReusableAnnotationView(
             withIdentifier: NSStringFromClass(PostAnnotationView.self),
             for: annotation
-        ) as! PostAnnotationView
-        let image = annotation.post.topic.emoji.image
-        view.image = image
-        return view
+        )
+    }
+    
+    func mapView(_ mapView: MKMapView, rendererFor overlay: MKOverlay) -> MKOverlayRenderer {
+        let renderer = MKPolylineRenderer(overlay: overlay)
+        renderer.lineWidth = 3
+        renderer.strokeColor = Asset.Colors.blue.color
+        return renderer
     }
 }
 
@@ -230,16 +340,53 @@ extension Optional where Wrapped: Equatable {
     }
 }
 
-extension String {
-    var image: UIImage? {
-        let size = CGSize(width: 80, height: 80)
-        UIGraphicsBeginImageContextWithOptions(size, false, 0)
-        UIColor.white.set()
-        let rect = CGRect(origin: .zero, size: size)
-        UIRectFill(CGRect(origin: .zero, size: size))
-        (self as AnyObject).draw(in: rect, withAttributes: [.font: UIFont.systemFont(ofSize: 60)])
-        let image = UIGraphicsGetImageFromCurrentImageContext()
-        UIGraphicsEndImageContext()
-        return image
+extension Collection {
+    func print(block: (Self) -> String) -> Self {
+        Swift.print(block(self))
+        return self
+    }
+}
+
+extension MKPolyline {
+    convenience init(_ points: [MKMapPoint]) {
+        self.init(points: points, count: points.count)
+    }
+}
+
+extension MKMapRect {
+    var clusterRects: [MKMapRect] {
+        let clusterSize = MKMapSize(width: width * 0.5, height: width * 0.7)
+        let verticalCount = Int(height / clusterSize.height) / 2 * 2 + 3
+        let horizontalCount = 3
+        return (0..<horizontalCount)
+            .reduce(into: [MKMapPoint]()) { result, x in
+                result += (0..<verticalCount).map { y in
+                    MKMapPoint(
+                        x: midX - clusterSize.width * Double(horizontalCount - 2 * x) / 2,
+                        y: midY - clusterSize.height * Double(verticalCount - 2 * y) / 2
+                    )
+                }
+            } .map { MKMapRect(origin: $0, size: clusterSize) }
+        
+    }
+    
+    var threeCirclePoints: [MKMapPoint] {
+        if width != height {
+            return middleSquare.threeCirclePoints
+        }
+        let r = width / 3.93185165258
+        let p = 1.52 * r
+        return [
+            MKMapPoint(x: minX + r, y: minY + r),
+            MKMapPoint(x: maxX - r, y: minY + p),
+            MKMapPoint(x: minX + p, y: maxY - r),
+        ]
+    }
+    
+    var middleSquare: MKMapRect {
+        if width > height {
+            return insetBy(dx: (width - height) / 2, dy: 0)
+        }
+        return insetBy(dx: 0, dy: (height - width) / 2)
     }
 }

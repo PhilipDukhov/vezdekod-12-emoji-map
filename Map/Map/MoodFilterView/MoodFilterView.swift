@@ -17,7 +17,8 @@ class MoodFilterView: UIView {
     var selectedMoodChanged: ((Mood?) -> Void)?
     
     private let moodViews: [Mood: MoodView] = Mood.allCases.reduce(into: [:]) {
-        let moodView = MoodView(mood: $1)
+        let moodView = MoodView()
+        moodView.text = $1.emoji
         $0[$1] = moodView
     }
     private let moodViewSize = CGSize(width: 32, height: 32)

@@ -9,10 +9,9 @@ import UIKit
 
 class MoodView: CircleView {
     private let label = UILabel()
-    var mood: Mood! {
-        didSet {
-            label.text = mood.emoji
-        }
+    var text: String? {
+        get { label.text }
+        set { label.text = newValue }
     }
     var bordered = true {
         didSet {
@@ -20,10 +19,8 @@ class MoodView: CircleView {
         }
     }
     
-    init(mood: Mood) {
+    init() {
         super.init(frame: .init(origin: .zero, size: .init(width: 32, height: 32)))
-        self.mood = mood
-        label.text = mood.emoji
         initialize()
     }
     
@@ -37,11 +34,11 @@ class MoodView: CircleView {
         addSubview(label)
         label.translatesAutoresizingMaskIntoConstraints = false
         label.adjustsFontSizeToFitWidth = true
-        label.minimumScaleFactor = 0.1
+        label.minimumScaleFactor = 0.01
         label.baselineAdjustment = .alignCenters
-        label.font = .systemFont(ofSize: 33)
+        label.font = .systemFont(ofSize: 200)
         NSLayoutConstraint.activate([
-            label.leftAnchor.constraint(equalTo: leftAnchor, constant: 2),
+            label.widthAnchor.constraint(equalTo: widthAnchor, multiplier: 0.8),
             label.centerXAnchor.constraint(equalTo: centerXAnchor),
             label.centerYAnchor.constraint(equalTo: centerYAnchor),
         ])

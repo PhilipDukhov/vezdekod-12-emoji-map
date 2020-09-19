@@ -15,6 +15,6 @@ class PostAnnotation: NSObject, MKAnnotation {
     }
     
     var coordinate: CLLocationCoordinate2D { post.location }
-    var title: String? { post.topic.title }
-    var subtitle: String? = ""
+    var title: String?
+    var subtitle: String?
 }

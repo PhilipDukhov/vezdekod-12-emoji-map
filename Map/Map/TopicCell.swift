@@ -14,7 +14,7 @@ class TopicCell: UICollectionViewCell {
         
     var dimmed = false {
         didSet {
-            alpha = dimmed ? 0.4 : 1
+            contentView.alpha = dimmed ? 0.4 : 1
         }
     }
     
@@ -30,7 +30,7 @@ class TopicCell: UICollectionViewCell {
         didSet {
             titleLabel.text = topic?.title
             topicLabel.text = topic?.emoji
-            moodView.mood = topic?.mood
+            moodView.text = topic?.mood.emoji
         }
     }
 }
