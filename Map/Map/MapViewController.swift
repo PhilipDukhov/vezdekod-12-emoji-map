@@ -25,11 +25,13 @@ class MapViewController: UIViewController {
     }
     private lazy var filteredPosts = posts {
         didSet {
+            guard filteredPosts != oldValue else { return }
             setNeedsUpdateMap()
         }
     }
     private var topics: [Topic] = Topic.allCases {
         didSet {
+            guard oldValue != topics else { return }
             updateCollectionView(oldValue: oldValue)
         }
     }
@@ -59,7 +61,7 @@ class MapViewController: UIViewController {
             } else {
                 setNeedsUpdateMap()
             }
-        }(false)
+        }(true)
         
         moodFilterView.selectedMoodChanged = { [weak self] _ in self?.filterUpdated() }
         keyboardNotifier.enabled = true
@@ -73,6 +75,10 @@ class MapViewController: UIViewController {
     override func viewDidDisappear(_ animated: Bool) {
         super.viewDidDisappear(animated)
         mapView.delegate = nil
+    }
+    
+    @IBAction private func closeButtonTap() {
+        navigationController?.dismiss(animated: true)
     }
     
     private func isDimmed(at indexPath: IndexPath) -> Bool {
@@ -291,7 +297,7 @@ extension MapViewController: MKMapViewDelegate {
         }
         let rect = mapView.visibleMapRect
         let rectCount = posts.filter({ rect.contains(.init($0.location)) }).count
-        let neededCount = Int(rect.width / 1000) - rectCount
+        let neededCount = Int(rect.width / 1500) - rectCount
         guard neededCount > 0 else { return }
         let generator: () -> [Post] = {
             (0..<neededCount).map { _ in

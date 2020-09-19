@@ -10,7 +10,7 @@ import CoreLocation
 import SwiftyUserDefaults
 import MapKit
 
-struct Post: Codable, DefaultsSerializable {
+struct Post: Codable, DefaultsSerializable, Equatable {
     let topic: Topic
     private let latitude: CLLocationDegrees
     private let longitude: CLLocationDegrees
