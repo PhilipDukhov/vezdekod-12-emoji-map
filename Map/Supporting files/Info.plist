@@ -60,6 +60,10 @@
 		<string>UIInterfaceOrientationLandscapeLeft</string>
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
+    <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+    <string>Доступ</string>
+	<key>NSLocationWhenInUseUsageDescription</key>
+	<string>Доступ</string>
 	<key>UIUserInterfaceStyle</key>
 	<string>Light</string>
 </dict>

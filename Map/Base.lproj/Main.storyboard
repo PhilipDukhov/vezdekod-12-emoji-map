@@ -1,24 +1,189 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="13122.16" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+<document type="com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB" version="3.0" toolsVersion="17156" targetRuntime="iOS.CocoaTouch" propertyAccessControl="none" useAutolayout="YES" useTraitCollections="YES" useSafeAreas="YES" colorMatched="YES" initialViewController="BYZ-38-t0r">
+    <device id="retina6_1" orientation="portrait" appearance="light"/>
     <dependencies>
-        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="13104.12"/>
+        <plugIn identifier="com.apple.InterfaceBuilder.IBCocoaTouchPlugin" version="17125"/>
         <capability name="Safe area layout guides" minToolsVersion="9.0"/>
+        <capability name="System colors in document resources" minToolsVersion="11.0"/>
+        <capability name="collection view cell content view" minToolsVersion="11.0"/>
         <capability name="documents saved in the Xcode 8 format" minToolsVersion="8.0"/>
     </dependencies>
     <scenes>
-        <!--View Controller-->
+        <!--Map View Controller-->
         <scene sceneID="tne-QT-ifu">
             <objects>
-                <viewController id="BYZ-38-t0r" customClass="ViewController" customModuleProvider="target" sceneMemberID="viewController">
+                <viewController id="BYZ-38-t0r" customClass="MapViewController" customModule="Map" customModuleProvider="target" sceneMemberID="viewController">
                     <view key="view" contentMode="scaleToFill" id="8bC-Xf-vdC">
-                        <rect key="frame" x="0.0" y="0.0" width="375" height="667"/>
+                        <rect key="frame" x="0.0" y="0.0" width="414" height="896"/>
                         <autoresizingMask key="autoresizingMask" widthSizable="YES" heightSizable="YES"/>
-                        <color key="backgroundColor" xcode11CocoaTouchSystemColor="systemBackgroundColor" cocoaTouchSystemColor="whiteColor"/>
+                        <subviews>
+                            <mapView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" mapType="standard" rotateEnabled="NO" pitchEnabled="NO" showsUserLocation="YES" showsBuildings="NO" showsCompass="NO" showsPointsOfInterest="NO" translatesAutoresizingMaskIntoConstraints="NO" id="NxE-83-jK4">
+                                <rect key="frame" x="0.0" y="0.0" width="414" height="740"/>
+                                <connections>
+                                    <outlet property="delegate" destination="BYZ-38-t0r" id="3cn-oM-wuL"/>
+                                </connections>
+                            </mapView>
+                            <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="6vp-O8-fgd" customClass="MoodFilterView" customModule="Map" customModuleProvider="target">
+                                <rect key="frame" x="0.0" y="44" width="414" height="666"/>
+                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                            </view>
+                            <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="ksp-4s-yto">
+                                <rect key="frame" x="0.0" y="710" width="414" height="152"/>
+                                <subviews>
+                                    <searchBar contentMode="redraw" searchBarStyle="minimal" placeholder="Поиск по теме и настроению" translatesAutoresizingMaskIntoConstraints="NO" id="YxV-uL-nRb">
+                                        <rect key="frame" x="0.0" y="0.0" width="414" height="56"/>
+                                        <textInputTraits key="textInputTraits" returnKeyType="done"/>
+                                        <connections>
+                                            <outlet property="delegate" destination="BYZ-38-t0r" id="2c8-Cj-7VA"/>
+                                        </connections>
+                                    </searchBar>
+                                    <collectionView clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="scaleToFill" dataMode="prototypes" translatesAutoresizingMaskIntoConstraints="NO" id="Qd0-kP-y4x">
+                                        <rect key="frame" x="0.0" y="56" width="414" height="96"/>
+                                        <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                        <constraints>
+                                            <constraint firstAttribute="height" constant="96" id="98o-SN-mwA"/>
+                                        </constraints>
+                                        <collectionViewFlowLayout key="collectionViewLayout" scrollDirection="horizontal" minimumLineSpacing="0.0" minimumInteritemSpacing="0.0" id="FV7-I7-Jdh">
+                                            <size key="itemSize" width="80" height="96"/>
+                                            <size key="headerReferenceSize" width="0.0" height="0.0"/>
+                                            <size key="footerReferenceSize" width="0.0" height="0.0"/>
+                                            <inset key="sectionInset" minX="0.0" minY="0.0" maxX="0.0" maxY="0.0"/>
+                                        </collectionViewFlowLayout>
+                                        <cells>
+                                            <collectionViewCell opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" reuseIdentifier="TopicCell" id="CjS-3l-UH9" customClass="TopicCell" customModule="Map" customModuleProvider="target">
+                                                <rect key="frame" x="0.0" y="0.0" width="80" height="96"/>
+                                                <autoresizingMask key="autoresizingMask" flexibleMaxX="YES" flexibleMaxY="YES"/>
+                                                <collectionViewCellContentView key="contentView" opaque="NO" clipsSubviews="YES" multipleTouchEnabled="YES" contentMode="center" insetsLayoutMarginsFromSafeArea="NO" id="Hra-wD-LxA">
+                                                    <rect key="frame" x="0.0" y="0.0" width="80" height="96"/>
+                                                    <autoresizingMask key="autoresizingMask"/>
+                                                    <subviews>
+                                                        <view clipsSubviews="YES" contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="8KC-75-Psk" customClass="CircleView" customModule="Map" customModuleProvider="target">
+                                                            <rect key="frame" x="8" y="4" width="64" height="64"/>
+                                                            <subviews>
+                                                                <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="🤗" textAlignment="natural" lineBreakMode="tailTruncation" minimumScaleFactor="0.10000000000000001" translatesAutoresizingMaskIntoConstraints="NO" id="X5u-1P-vim">
+                                                                    <rect key="frame" x="20" y="-2" width="24" height="68.5"/>
+                                                                    <fontDescription key="fontDescription" type="system" pointSize="57"/>
+                                                                    <nil key="textColor"/>
+                                                                    <nil key="highlightedColor"/>
+                                                                </label>
+                                                            </subviews>
+                                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            <constraints>
+                                                                <constraint firstItem="X5u-1P-vim" firstAttribute="centerY" secondItem="8KC-75-Psk" secondAttribute="centerY" id="3Qr-XT-ngd"/>
+                                                                <constraint firstAttribute="width" secondItem="8KC-75-Psk" secondAttribute="height" id="TuQ-Ok-qL9"/>
+                                                                <constraint firstItem="X5u-1P-vim" firstAttribute="width" secondItem="8KC-75-Psk" secondAttribute="width" multiplier="0.375" id="Xf6-Y4-dZG"/>
+                                                                <constraint firstItem="X5u-1P-vim" firstAttribute="centerX" secondItem="8KC-75-Psk" secondAttribute="centerX" id="gI6-Sn-ZYN"/>
+                                                            </constraints>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                                    <real key="value" value="0.5"/>
+                                                                </userDefinedRuntimeAttribute>
+                                                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                                    <color key="value" red="0.0" green="0.0" blue="0.0" alpha="0.13991804064417179" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                                                </userDefinedRuntimeAttribute>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </view>
+                                                        <view contentMode="scaleToFill" translatesAutoresizingMaskIntoConstraints="NO" id="dbQ-MY-fLN" customClass="MoodView" customModule="Map" customModuleProvider="target">
+                                                            <rect key="frame" x="8" y="4" width="20" height="20"/>
+                                                            <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                            <constraints>
+                                                                <constraint firstAttribute="width" secondItem="dbQ-MY-fLN" secondAttribute="height" id="bD5-Wq-6Ha"/>
+                                                            </constraints>
+                                                            <userDefinedRuntimeAttributes>
+                                                                <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                                                    <real key="value" value="10"/>
+                                                                </userDefinedRuntimeAttribute>
+                                                                <userDefinedRuntimeAttribute type="color" keyPath="borderColor">
+                                                                    <color key="value" red="0.0" green="0.0" blue="0.0" alpha="0.050000000000000003" colorSpace="custom" customColorSpace="calibratedRGB"/>
+                                                                </userDefinedRuntimeAttribute>
+                                                                <userDefinedRuntimeAttribute type="number" keyPath="borderWidth">
+                                                                    <real key="value" value="0.5"/>
+                                                                </userDefinedRuntimeAttribute>
+                                                            </userDefinedRuntimeAttributes>
+                                                        </view>
+                                                        <label opaque="NO" userInteractionEnabled="NO" contentMode="left" horizontalHuggingPriority="251" verticalHuggingPriority="251" text="Label" textAlignment="center" lineBreakMode="tailTruncation" baselineAdjustment="alignBaselines" minimumScaleFactor="0.29999999999999999" translatesAutoresizingMaskIntoConstraints="NO" id="dh1-hZ-5px">
+                                                            <rect key="frame" x="8" y="72" width="64" height="18"/>
+                                                            <fontDescription key="fontDescription" type="system" pointSize="12"/>
+                                                            <nil key="textColor"/>
+                                                            <nil key="highlightedColor"/>
+                                                        </label>
+                                                    </subviews>
+                                                    <constraints>
+                                                        <constraint firstItem="dbQ-MY-fLN" firstAttribute="top" secondItem="8KC-75-Psk" secondAttribute="top" id="2gt-Vl-TFL"/>
+                                                        <constraint firstItem="8KC-75-Psk" firstAttribute="width" secondItem="Hra-wD-LxA" secondAttribute="width" constant="-16" id="3Jh-Vb-HfB"/>
+                                                        <constraint firstAttribute="bottom" secondItem="dh1-hZ-5px" secondAttribute="bottom" constant="6" id="6Rk-IX-M2B"/>
+                                                        <constraint firstItem="dh1-hZ-5px" firstAttribute="leading" secondItem="8KC-75-Psk" secondAttribute="leading" id="ACJ-YZ-Yaz"/>
+                                                        <constraint firstItem="dh1-hZ-5px" firstAttribute="centerX" secondItem="Hra-wD-LxA" secondAttribute="centerX" id="KOO-vu-vjM"/>
+                                                        <constraint firstItem="dbQ-MY-fLN" firstAttribute="leading" secondItem="8KC-75-Psk" secondAttribute="leading" id="bbC-sQ-qCE"/>
+                                                        <constraint firstItem="dbQ-MY-fLN" firstAttribute="width" secondItem="8KC-75-Psk" secondAttribute="width" multiplier="0.3125" id="dwG-5f-oVt"/>
+                                                        <constraint firstItem="8KC-75-Psk" firstAttribute="top" secondItem="Hra-wD-LxA" secondAttribute="top" constant="4" id="eh2-f6-dY5"/>
+                                                        <constraint firstAttribute="trailing" secondItem="8KC-75-Psk" secondAttribute="trailing" constant="8" id="glX-6B-F80"/>
+                                                        <constraint firstItem="dh1-hZ-5px" firstAttribute="top" secondItem="8KC-75-Psk" secondAttribute="bottom" constant="4" id="jVd-bs-Mdw"/>
+                                                    </constraints>
+                                                </collectionViewCellContentView>
+                                                <color key="backgroundColor" white="0.0" alpha="0.0" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                                <connections>
+                                                    <outlet property="moodView" destination="dbQ-MY-fLN" id="77S-4A-H37"/>
+                                                    <outlet property="titleLabel" destination="dh1-hZ-5px" id="kZj-8q-WJL"/>
+                                                    <outlet property="topicLabel" destination="X5u-1P-vim" id="Krv-DT-tud"/>
+                                                </connections>
+                                            </collectionViewCell>
+                                        </cells>
+                                        <connections>
+                                            <outlet property="dataSource" destination="BYZ-38-t0r" id="CXF-og-qrV"/>
+                                            <outlet property="delegate" destination="BYZ-38-t0r" id="cea-5C-UDn"/>
+                                        </connections>
+                                    </collectionView>
+                                </subviews>
+                                <color key="backgroundColor" white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+                                <constraints>
+                                    <constraint firstItem="YxV-uL-nRb" firstAttribute="top" secondItem="ksp-4s-yto" secondAttribute="top" id="0PZ-H6-WQM"/>
+                                    <constraint firstItem="Qd0-kP-y4x" firstAttribute="leading" secondItem="ksp-4s-yto" secondAttribute="leading" id="5JE-MQ-6aN"/>
+                                    <constraint firstItem="YxV-uL-nRb" firstAttribute="leading" secondItem="ksp-4s-yto" secondAttribute="leading" id="6Rf-91-YyQ"/>
+                                    <constraint firstAttribute="trailing" secondItem="YxV-uL-nRb" secondAttribute="trailing" id="NqZ-kd-FzN"/>
+                                    <constraint firstAttribute="bottom" secondItem="Qd0-kP-y4x" secondAttribute="bottom" id="WMv-0a-CdD"/>
+                                    <constraint firstAttribute="trailing" secondItem="Qd0-kP-y4x" secondAttribute="trailing" id="sfj-ds-EvC"/>
+                                    <constraint firstItem="Qd0-kP-y4x" firstAttribute="top" secondItem="YxV-uL-nRb" secondAttribute="bottom" id="tf2-ia-Y0M"/>
+                                </constraints>
+                                <userDefinedRuntimeAttributes>
+                                    <userDefinedRuntimeAttribute type="number" keyPath="cornerRadius">
+                                        <real key="value" value="14"/>
+                                    </userDefinedRuntimeAttribute>
+                                </userDefinedRuntimeAttributes>
+                            </view>
+                        </subviews>
                         <viewLayoutGuide key="safeArea" id="6Tk-OE-BBY"/>
+                        <color key="backgroundColor" systemColor="systemBackgroundColor"/>
+                        <constraints>
+                            <constraint firstItem="6vp-O8-fgd" firstAttribute="leading" secondItem="6Tk-OE-BBY" secondAttribute="leading" id="0ms-iN-pLg"/>
+                            <constraint firstItem="ksp-4s-yto" firstAttribute="top" secondItem="NxE-83-jK4" secondAttribute="bottom" constant="-30" id="Dx9-Yo-Wam"/>
+                            <constraint firstItem="ksp-4s-yto" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="SnE-iD-AAa"/>
+                            <constraint firstItem="ksp-4s-yto" firstAttribute="top" secondItem="6vp-O8-fgd" secondAttribute="bottom" id="Toc-FL-xxl"/>
+                            <constraint firstAttribute="trailing" secondItem="NxE-83-jK4" secondAttribute="trailing" id="a2y-kp-hn4"/>
+                            <constraint firstItem="NxE-83-jK4" firstAttribute="leading" secondItem="8bC-Xf-vdC" secondAttribute="leading" id="aRr-fW-MOF"/>
+                            <constraint firstAttribute="trailing" secondItem="ksp-4s-yto" secondAttribute="trailing" id="cVU-bj-And"/>
+                            <constraint firstItem="6vp-O8-fgd" firstAttribute="top" secondItem="6Tk-OE-BBY" secondAttribute="top" id="eqV-rg-BbK"/>
+                            <constraint firstItem="NxE-83-jK4" firstAttribute="top" secondItem="8bC-Xf-vdC" secondAttribute="top" id="oXw-BM-Ltx"/>
+                            <constraint firstItem="6vp-O8-fgd" firstAttribute="centerX" secondItem="8bC-Xf-vdC" secondAttribute="centerX" id="r5m-8R-duX"/>
+                            <constraint firstItem="Qd0-kP-y4x" firstAttribute="bottom" secondItem="6Tk-OE-BBY" secondAttribute="bottom" id="u4P-Vn-BiI"/>
+                        </constraints>
                     </view>
+                    <connections>
+                        <outlet property="collectionView" destination="Qd0-kP-y4x" id="d4b-8g-R4K"/>
+                        <outlet property="collectionViewHeightConstraint" destination="98o-SN-mwA" id="NRI-xU-s3w"/>
+                        <outlet property="keyboardConstraint" destination="u4P-Vn-BiI" id="scq-AH-6gY"/>
+                        <outlet property="mapView" destination="NxE-83-jK4" id="STk-as-sco"/>
+                        <outlet property="moodFilterView" destination="6vp-O8-fgd" id="4Un-cg-Kmh"/>
+                    </connections>
                 </viewController>
                 <placeholder placeholderIdentifier="IBFirstResponder" id="dkx-z0-nzr" sceneMemberID="firstResponder"/>
             </objects>
+            <point key="canvasLocation" x="13.043478260869566" y="98.4375"/>
         </scene>
     </scenes>
+    <resources>
+        <systemColor name="systemBackgroundColor">
+            <color white="1" alpha="1" colorSpace="custom" customColorSpace="genericGamma22GrayColorSpace"/>
+        </systemColor>
+    </resources>
 </document>
