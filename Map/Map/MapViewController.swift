@@ -147,11 +147,27 @@ class MapViewController: UIViewController {
         })
     }
     
-    private var annotations = [PostAnnotation]() {
+    private var annotations = [PostAnnotation]()
+    private var postsToBeAnnotated = [Post]() {
         didSet {
-            mapView.removeAnnotations(oldValue)
-            mapView.addAnnotations(annotations)
-
+            let diff = postsToBeAnnotated.difference(from: oldValue)
+            var removed = [Post]()
+            var added = [Post]()
+            for change in diff {
+                switch change {
+                case let .remove(_, element, _):
+                    removed.append(element)
+                case let .insert(_, element, _):
+                    added.append(element)
+                }
+            }
+            let addedAn = added.map(PostAnnotation.init)
+            var removedAn = annotations
+                .filter { removed.contains($0.post) }
+            mapView.removeAnnotations(removedAn)
+            mapView.addAnnotations(addedAn)
+            annotations = annotations.filter { !removed.contains($0.post) }
+            + addedAn
         }
     }
     
@@ -237,14 +253,15 @@ class MapViewController: UIViewController {
                 }
             }
 //            .print { "result \($0.count)" }
-            .map(PostAnnotation.init)
+            
         computing = false
         DispatchQueue.main.async {
             if self.computingNeeded {
                 self.computingNeeded = false
                 self.setNeedsUpdateMap()
             } else {
-                self.annotations = newAnnotations
+               
+                self.postsToBeAnnotated = newAnnotations
                 self.overlays = overlays
             }
         }
