@@ -61,7 +61,7 @@ class MapViewController: UIViewController {
             } else {
                 setNeedsUpdateMap()
             }
-        }(true)
+        }(false)
         
         moodFilterView.selectedMoodChanged = { [weak self] _ in self?.filterUpdated() }
         keyboardNotifier.enabled = true
@@ -147,10 +147,22 @@ class MapViewController: UIViewController {
         })
     }
     
-    private var annotations = [MKAnnotation]() {
+    private var annotations = [PostAnnotation]() {
         didSet {
-            mapView.removeAnnotations(oldValue)
-            mapView.addAnnotations(annotations)
+            let diff = annotations.difference(from: oldValue) { $0.post == $1.post }
+            var removed = [PostAnnotation]()
+            var added = [PostAnnotation]()
+            for change in diff {
+                switch change {
+                case let .remove(_, element, _):
+                    removed.append(element)
+                case let .insert(_, element, _):
+                    added.append(element)
+                }
+            }
+            
+            mapView.removeAnnotations(removed)
+            mapView.addAnnotations(added)
         }
     }
     
