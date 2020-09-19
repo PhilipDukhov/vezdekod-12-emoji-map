@@ -149,20 +149,9 @@ class MapViewController: UIViewController {
     
     private var annotations = [PostAnnotation]() {
         didSet {
-            let diff = annotations.difference(from: oldValue) { $0.post == $1.post }
-            var removed = [PostAnnotation]()
-            var added = [PostAnnotation]()
-            for change in diff {
-                switch change {
-                case let .remove(_, element, _):
-                    removed.append(element)
-                case let .insert(_, element, _):
-                    added.append(element)
-                }
-            }
-            
-            mapView.removeAnnotations(removed)
-            mapView.addAnnotations(added)
+            mapView.removeAnnotations(oldValue)
+            mapView.addAnnotations(annotations)
+
         }
     }
     
@@ -170,8 +159,8 @@ class MapViewController: UIViewController {
     private var computing = false
     private func setNeedsUpdateMap() {
         guard !computingNeeded else { return }
+        computingNeeded = true
         if computing {
-            computingNeeded = true
         } else {
             let visibleMapRect = mapView.visibleMapRect
             backgroundQueue.async {
